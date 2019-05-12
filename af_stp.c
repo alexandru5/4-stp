@@ -33,6 +33,19 @@ struct hash_node {
 static int stp_create(struct net *net, struct socket *sock, int protocol,
 						int kern)
 {
+
+	struct sock *socket;
+
+	if (sock->type != SOCK_DGRAM)	return -ESOCKTNOSUPPORT;
+
+	socket = sk_alloc(net, AF_STP, GFP_KERNEL, &stp_proto, kern);
+
+	if (!socket)	return -ENOMEM;
+
+	sock->ops = &stp_ops;
+	socket->protocol = protocol;
+	sock_init_data(sock, socket);
+	
 	return 0;
 }
 
