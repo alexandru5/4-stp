@@ -12,6 +12,7 @@ extern "C" {
 #include <linux/types.h>
 
 #define HASH_LEN 14
+#define MACADDR_LEN 6
 
 /* STP reuses the defines of ancient protocols like Econet and Xerox PUP
  * because adding a new protocol would involve patching the kernel, which we
