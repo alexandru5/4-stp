@@ -7,6 +7,7 @@
 #include <linux/init.h>
 #include <linux/net.h>
 #include <linux/in.h>
+#include <linux/hashmap.h>
 #include <net/sock.h>
 
 #include "stp.h"
@@ -14,6 +15,20 @@
 MODULE_DESCRIPTION("Simple transfer protocol");
 MODULE_AUTHOR("Blondutz&Pici");
 MODULE_LICENSE("GPL");
+
+DEFINE_HASHTABLE(socket_hash, HASH_LEN);
+
+struct stp_sock {
+	struct sock socket;
+	struct sockaddr_stp *addr;
+	__be16 port;
+	__u8 mac_addr[MAC_LEN];
+};
+
+struct hash_node {
+	struct stp_sock *data;
+	struct hlist_node hashmap;
+};
 
 static int stp_create(struct net *net, struct socket *sock, int protocol,
 						int kern)
@@ -69,6 +84,12 @@ static const struct proto_ops stp_ops = {
 	.mmap =	sock_no_mmap,
 	.sendpage =	sock_no_sendpage,
 };
+
+static struct proto stp_proto = {
+	.name = STP_PROTO_NAME,
+	.owner = THIS_MODULE,
+	.obj_size = 
+}
 
 static const struct net_proto_family stp_family_ops = {
 	.family =	PF_STP,
